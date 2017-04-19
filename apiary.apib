@@ -1,95 +1,55 @@
 FORMAT: 1A
-HOST: https://postboy_api.herokuapp.com/
+HOST: http://polls.apiblueprint.org/
 
 # Postboy
 
-**TODO: Service description**
+Asynchronous delivery service for Email or SMS messages.
 
-## Use Cases
+## Features
 
-**TODO: Use Cases**
+- Configurable retry limits (how many to retry delivery: 0 - N - :infinity) and backoff strategy (exponential, static)
+- Configurable concurrency limit
+- HTTP connection pool for perfomance
+- RabbitMQ and HTTP protocols
+- Sheduled delivery windows including timezone
+- Webhooks
 
-## Setup Guide
+## Notifications [/notifications]
 
-### Docker
-
-Easiest way to deploy Postboy is to use docker containers.
-We constantly are releasing pre-built versions that will reduce time to deploy:
-
-- [Back-End Docker container]() (~100 MB).
-
-**TODO: Other Containers**
-
-They are built on top of Alpine Linux, to reduce container size and memory consumption.
-
-## Pages [/pages]
-
-### Search for a Page [GET /pages{?limit,starting_after,ending_before,labels,title}]
-
-+ Parameters
-    + labels: `label-name1,label-name2` (string, optional) - Label names to filter Pages list.
-    + limit: 20 (number, optional) - A limit on the number of objects to be returned, between 1 and 100. Default: 50.
-    + starting_after: 56c31536a60ad644060041af (string, optional) - A cursor to fetch next page. Taken from collection response.
-    + ending_before: 56c31536a60ad644060041aa (string, optional) - A cursor to fetch previous page. Taken from collection response.
-    + title: Signup (string, optional) - Substring search for a title.
-
-+ Response 200 (application/json)
-    + Attributes (Response_Collection)
-        + data (array[Page])
-
-### Create Page [POST]
+### Send Notification [POST]
 
 + Request (application/json)
-    + Attributes (Page)
-
+    + Attributes (Notification)
+       
 + Response 201 (application/json)
-    + Attributes (Response_OK)
-        + meta (Response__Meta)
-            + code: 201 (number)
-        + data (Page)
+    + Headers
+    
+            Location: /notifications/123
 
-### Get Page by ID [GET /pages/{id}]
+    + Attributes (Response_OK)
+        + meta
+            + code: 201
+        + data (Notification)
+            + id: 19283874747
+            + status: accepted (enum, required)
+                - accepted (string) - Message is accepted and sheduled for delivery.
+                - delivered (string) - Message is delivered to destination gateway.
+                - failed (string) - Message can not be delivered (see `failure_reason`).
+            + failure_reason (object, optional)
+
+
+### Get Status [GET /notifications/{external_id}]
 
 + Parameters
-    + id: 58e2278a84092e61700041a7 (string, optional) - Page ID
+    + external_id: 123 (string, required)
 
 + Response 200 (application/json)
     + Attributes (Response_OK)
-        + data (Page)
-
-### Replace Page [PUT /pages/{id}]
-
-+ Parameters
-    + id: 58e2278a84092e61700041a7 (string, optional) - Page ID
-
-+ Request (application/json)
-    + Attributes (Page)
-
-+ Response 200 (application/json)
-    + Attributes (Response_OK)
-        + data (Page)
-
-### Update Page [PATCH /pages/{id}]
-
-+ Parameters
-    + id: 58e2278a84092e61700041a7 (string, optional) - Page ID
-
-+ Request (application/json)
-    + Attributes (object)
-        + body: `<h1>{{user_name}}</h1>` (string, optional)
-
-+ Response 200 (application/json)
-    + Attributes (Response_OK)
-        + data (Page)
-            + body: `<h1>{{user_name}}</h1>` (string, required)
-
-### Delete Page [DELETE /pages/{id}]
-
-+ Parameters
-    + id: 58e2278a84092e61700041a7 (string, optional) - Page ID
-
-+ Request (application/json)
-+ Response 200 (application/json)
+        + data (Notification)
+            + status: delivered (enum, required)
+                - accepted
+                - delivered
+                - failed
 
 # Data Structures
 ## Responses
@@ -143,9 +103,45 @@ They are built on top of Alpine Linux, to reduce container size and memory consu
 + size: 1000 (number) - Total number of objects in collection.
 + has_more: false (boolean) - Is this collection have more data to load in the same style as last request loaded it.
 
-## Pages
-### Page
-+ id: 58e2278a84092e61700041a7 (string, optional)
-+ title: `Sign-Up Email` (string, required) - Page UI title with max length 255 characters.
-+ description: `Email that is sent on signup process` (string, optional) - Page UI description with max length 510 characters.
-+ body: `<h1>{{l10n.hello}} {{user_name}}, in {{locale}}</h1>` (string, required) - Page that should be rendered with `syntax` processor.
+## Notifications
+### Notification
++ external_id: 123 (string, optional) - External ID may be used when saving notification ID for later pooling is not desired.
++ channel: email (enum, required) - Delivery channel.
+    - email (string)
+    - phone (string)
++ to: `bob@example.com` (string, required) - Recipient's ID in specified channel.
++ from: `MyService@example.com` (string, optional) - Sender ID for channels that support it.
++ One of
+    + data (`Email_Data`, required)
+    + data (`Phone_Data`, required)
++ shedule (Schedule)
++ webhook: `http://example.com/delivery_status` (string, optional)
+
+## Schedules
+### `Schedule`
++ timezone: Europe/Kiev
++ rules (array[Schedule__Item], fixed-type)
+
+### `Schedule__Item``
++ weekdays (array[enum], required)
+    - monday (string, optional)
+    - tuesday (string, optional)
+    - wednesday (string, optional)
+    - thursday (string, optional)
+    - friday (string, optional)
+    - sunday (string, optional)
++ timeframes (array[`Schedule__Item__Timeframe`], required)
+
+### `Schedule__Item__Timeframe`
++ from: `11:00:00` (string, required) - Delivery window begin time.
++ to: `15:00:00` (string, required) - Delivery window end time.
+
+## Emails
+### `Email_Data`
++ subject: `Hello Bob` (string, required)
++ html_body: `I have a <b>gift</b> for you` (string, required)
++ text_body: `I have a gift for you` (string, optional)
+
+## Phone
+### `Phone_Data`
++ text: `Hey, how about to hand out togather?` (string, required)
