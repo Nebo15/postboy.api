@@ -38,13 +38,37 @@ Delivery service for Email or SMS messages.
 | Twilio    | `Postman.SMS.Adapters.Twilio` | https://www.twilio.com/ |
 | Nexmo     | `Postman.SMS.Adapters.Nexmo`  | https://www.nexmo.com/  |
 
+## Monitoring Metrics
+
+| Metric Name               | Type    | Tags                          | Description |
+| ------------------------- | ------- | ----------------------------- | ----------- |
+| `messages_count`          | counter | `channel_id`, `channel_title` | Messages hit rate. |
+| `deliveries_latency`      | counter | `status`, `adapter`           | Delivery attempts latency. |
+| `deliveries_count`        | counter | `status`, `adapter`           | Delivery attempts count. |
+| `adapter_request_count`   | counter | `adapter`, `channel_id`, `channel_title` | Upstream API hit rate. |
+| `adapter_request_latency` | counter | `adapter`, `channel_id`, `channel_title` | Upstream API response time. |
+
+## Installation
+
+**TODO**
+
+## Configuration
+
+**TODO**
+
+## Performance
+
+**TODO**
+
 ## TODOs
 
 Resources:
 - https://www.rabbitmq.com/blog/2015/04/16/scheduling-messages-with-rabbitmq/
 
 Toughts:
+- Allow to setup retry/delivery adapters funnel - in future allow to await for API calls between funnels. Maybe funnel as a separate service?
 - Pass all possible message params (if some missing - certain adapters will fail) so shedule can decide which type of notification when should be sent?
+- Move shedule rules out to separate entity/collection and add 1 or more of them to channels?
 - Move retry policy and delivery shedule control out to Gandalf?
 
 > Define a new Policy Controller object which can be internal (part of Postboy) or external (API call to Gandalf)?
@@ -305,6 +329,7 @@ all unsets will drop existing values in updated Service Account.
 ### `Channel_Type` (enum)
 - email (string) - Send Email message via supported adapter.
 - phone (string) - Send SMS message via supported adapter.
+- chat (string) - Send Chat (viber, messenger, etc.) message.
 
 ### `Schedule`
 + adapter (enum, required)
