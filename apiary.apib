@@ -207,10 +207,30 @@ all unsets will drop existing values in updated Service Account.
 + Request (application/json)
 + Response 200 (application/json)
 
-## Messages [/channels/{channel_id}/messages]
+### Send Message trough Channel [POST /channels/{id}/messages]
 
-+ Parameters
-    + channel_id: 58e2278a84092e61700041a7 (string) - ID of a Channel
+After dispatching message with this method all Channel parameters will be persisted within Message. 
+It means that future Channel changes would not affect message delivery.
+
++ Request (application/json)
+    + Attributes (object)
+        + message (Message_Data)
+
++ Response 202 (application/json)
+    + Headers
+    
+            Location: /messages/19283874747
+
+    + Attributes (Response_OK)
+        + meta
+            + code: 202
+        + data (Message_Response)
+
+
+## Messages [/messages]
+
+Message receives all channel settings to decouple delivery system from channels management
+and provide a way to add a custom policy controller on top of [Messages]().
 
 ### Send Message [POST]
 
@@ -228,14 +248,15 @@ all unsets will drop existing values in updated Service Account.
             + code: 202
         + data (Message_Response)
 
-### Get Messages [GET /messages{?limit,starting_after,ending_before,channel_ids,statuses}]
+### Get Messages [GET /messages{?limit,starting_after,ending_before,channel_ids,statuses,external_ids}]
 
 + Parameters
     + limit: 20 (number, optional) - A limit on the number of objects to be returned, between 1 and 100. Default: 50.
     + starting_after: 56c31536a60ad644060041af (string, optional) - A cursor to fetch next page. Taken from collection response.
     + ending_before: 56c31536a60ad644060041aa (string, optional) - A cursor to fetch previous page. Taken from collection response.
-    + channel_ids: 58e2278a84092e61700041a7 (string, required) - List of Channel IDs joined by comma.
-    + statuses: accepted,declined (string, required) - List of Message statuses joined by comma.
+    + channel_ids: 58e2278a84092e61700041a7 (string, optional) - List of Channel IDs joined by comma. Filters only when Message was sent trough Channel or there was `id` field in `channel` object.
+    + statuses: `accepted,declined` (string, optional) - List of Message statuses joined by comma.
+    + `external_ids`: `1,49` (string, optional) - List of `external_id` values to filter result.
 
 + Response 200 (application/json)
     + Attributes (Response_OK)
@@ -310,39 +331,26 @@ all unsets will drop existing values in updated Service Account.
     + `group/emails` (string)
     + `action/signup` (string)
     + `other_tag` (string)
-+ type (Channel_Type, required) - Delivery channel
-+ `service_account_id`: slhaowjjdju (string, required) - ID of service account to be used for a Channel Messages.
-+ `schedule_rules` (array[Schedule], fixed-type) - **Warning!** You can create overlapping shedules. In this case adapter pick is non-deterministic and appying rule will be picked randomly.
-+ `retry_policy` (Retry_Policy)
++ Include `Channel_Data`
 + defaults (object, optional) - Default values for Messages in this channel.
     + from: `MyService@example.com` (string, optional) - Sender ID for channels that support it.
     + One of
-        + data (`Email_Data`, required)
-        + data (`Phone_Data`, required)
+        + payload (`Payload_Email`, required)
+        + payload (`Payload_SMS`, required)
     + `webhook_url`: `http://example.com/delivery_status` (string, optional)
++ `service_account_id`: slhaowjjdju (string, required) - ID of service account to be used for a Channel Messages.
+
+### `Channel_Data` 
++ `schedule` (array[Schedule], fixed-type) - **Warning!** You can create overlapping shedules. In this case adapter pick is non-deterministic and appying rule will be picked randomly.
++ `retry_policy` (Retry_Policy)
 
 ### `Channel_Response` (Channel)
 + id: 58e2278a84092e61700041a7 (string, optional)
 + created_at: `2017-04-20T19:14:13Z` (string, required) - ISO 8601 date and time in UTC timezone.
 + updated_at: `2017-04-20T19:14:13Z` (string, required) - ISO 8601 date and time in UTC timezone.
 
-### `Channel_Type` (enum)
-- email (string) - Send Email message via supported adapter.
-- phone (string) - Send SMS message via supported adapter.
-- chat (string) - Send Chat (viber, messenger, etc.) message.
-
 ### `Schedule`
-+ adapter (enum, required)
-    - Bamboo.MailgunAdapter (string)
-    - Bamboo.MailjetAdapter (string)
-    - Bamboo.MandrillAdapter (string)
-    - Bamboo.SendGridAdapter (string)
-    - Bamboo.SparkPostAdapter (string)
-    - Bamboo.PostmarkAdapter (string)
-    - Bamboo.SendcloudAdapter (string)
-    - Bamboo.SMTPAdapter (string)
-    - Postman.SMS.Adapters.Twilio (string)
-    - Postman.SMS.Adapters.Nexmo (string)
++ adapter (Adapters, required)
 + weekdays (array[enum], required)
     - monday (string, optional)
     - tuesday (string, optional)
@@ -363,6 +371,18 @@ all unsets will drop existing values in updated Service Account.
 + backoff: exponential (enum, optional) - Backoff strategy.
     - static (string) - Do not increase initial interval when retrying requests: `max(initial_interval*0.75+rand(0, max(initial_interval*0.25, 1)), max_interval)`.
     - exponential (string) - Truncated binary exponential. Increases timeout exponentially on each delivery failure: `max(2^retry+initial_interval*0.75+rand(0, max(initial_interval*0.25, 1)), max_interval)`.
+
+### Adapters (enum)
+- Bamboo.MailgunAdapter (string)
+- Bamboo.MailjetAdapter (string)
+- Bamboo.MandrillAdapter (string)
+- Bamboo.SendGridAdapter (string)
+- Bamboo.SparkPostAdapter (string)
+- Bamboo.PostmarkAdapter (string)
+- Bamboo.SendcloudAdapter (string)
+- Bamboo.SMTPAdapter (string)
+- Postman.SMS.Adapters.Twilio (string)
+- Postman.SMS.Adapters.Nexmo (string)
 
 ## `Service_Accounts`
 ### `Service_Account`
@@ -406,16 +426,23 @@ all unsets will drop existing values in updated Service Account.
 
 ## Messages
 ### Message
++ Include `Message_Data`
++ channel (`Channel_Data`, required)
+    + service_account (object)
+        + settings (`Service_Account__Settings`, required)
+
+### `Message_Data`
 + `external_id`: 123 (string, optional) - External ID may be used when saving notification ID for later pooling is not desired. MUST be unique.
 + to: `bob@example.com` (string, required) - Recipient's ID in specified channel.
 + from: `MyService@example.com` (string, optional) - Sender ID for channels that support it.
 + One of
-    + data (`Email_Data`, required)
-    + data (`Phone_Data`, required)
+    + payload (`Payload_Email`, required)
+    + payload (`Payload_SMS`, required)
 + `webhook_url`: `http://example.com/delivery_status` (string, optional)
 + timezone: `Europe/Kiev` (string, optional) - Timezone to correct delivery windows for customers in other countries.
 
-### `Message_Response`
+
+### `Message_Response` (Message)
 + id: 12321314 (string, optional) - External ID may be used when saving notification ID for later pooling is not desired. MUST be unique.
 + created_at: `2017-04-20T19:14:13Z` (string, required) - ISO 8601 date and time in UTC timezone.
 + updated_at: `2017-04-20T19:14:13Z` (string, required) - ISO 8601 date and time in UTC timezone.
@@ -437,12 +464,11 @@ all unsets will drop existing values in updated Service Account.
 + `metadata` (object, optional)
 + `created_at`: `2017-04-20T19:14:13Z` (string, required) - ISO 8601 date and time in UTC timezone.
 
-## Emails
-### `Email_Data`
+## Payloads
+### `Payload_Email`
 + subject: `Hello Bob` (string, required)
 + html_body: `I have a <b>gift</b> for you` (string, required)
 + text_body: `I have a gift for you` (string, optional)
 
-## Phone
-### `Phone_Data`
+### `Payload_SMS`
 + text: `Hey, how about to hand out togather?` (string, required)
