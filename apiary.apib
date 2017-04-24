@@ -75,7 +75,7 @@ Toughts:
 
 ## Service Accounts [/service_accounts]
 
-Service Accounts is used to define adapters credentials. 
+Service Accounts is used to define adapters credentials.
 They are used in Channels specify which account in which service to use on each communication channel.
 
 ### List Service Accounts [GET]
@@ -92,7 +92,7 @@ They are used in Channels specify which account in which service to use on each 
 
 + Response 201 (application/json)
     + Headers
-    
+
             Location: /service_accounts/58e2278a84092e61700041a7
 
     + Attributes (Response_OK)
@@ -102,7 +102,7 @@ They are used in Channels specify which account in which service to use on each 
 
 ### Configure Service Account [PUT /service_accounts/{id}]
 
-**Warning!** You should send whole `service_account` object, 
+**Warning!** You should send whole `service_account` object,
 all unsets will drop existing values in updated Service Account.
 
 + Parameters
@@ -154,7 +154,7 @@ all unsets will drop existing values in updated Service Account.
 
 + Response 201 (application/json)
     + Headers
-    
+
             Location: /channels/58e2278a84092e61700041a7
 
     + Attributes (Response_OK)
@@ -209,7 +209,7 @@ all unsets will drop existing values in updated Service Account.
 
 ### Send Message trough Channel [POST /channels/{id}/messages]
 
-After dispatching message with this method all Channel parameters will be persisted within Message. 
+After dispatching message with this method all Channel parameters will be persisted within Message.
 It means that future Channel changes would not affect message delivery.
 
 + Request (application/json)
@@ -218,7 +218,7 @@ It means that future Channel changes would not affect message delivery.
 
 + Response 202 (application/json)
     + Headers
-    
+
             Location: /messages/19283874747
 
     + Attributes (Response_OK)
@@ -240,7 +240,7 @@ and provide a way to add a custom policy controller on top of [Messages]().
 
 + Response 202 (application/json)
     + Headers
-    
+
             Location: /messages/19283874747
 
     + Attributes (Response_OK)
@@ -340,7 +340,7 @@ and provide a way to add a custom policy controller on top of [Messages]().
     + `webhook_url`: `http://example.com/delivery_status` (string, optional)
 + `service_account_id`: slhaowjjdju (string, required) - ID of service account to be used for a Channel Messages.
 
-### `Channel_Data` 
+### `Channel_Data`
 + `schedule` (array[Schedule], fixed-type) - **Warning!** You can create overlapping shedules. In this case adapter pick is non-deterministic and appying rule will be picked randomly.
 + `retry_policy` (Retry_Policy)
 
@@ -386,7 +386,7 @@ and provide a way to add a custom policy controller on top of [Messages]().
 
 ## `Service_Accounts`
 ### `Service_Account`
-+ name: `My first service account` (string, required) - Service Account UI title with max length 255 characters. 
++ name: `My first service account` (string, required) - Service Account UI title with max length 255 characters.
 + settings (`Service_Account__Settings`, required)
 
 ### `Service_Account__Settings`
