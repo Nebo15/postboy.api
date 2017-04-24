@@ -1,6 +1,6 @@
 # Postboy
 
-**TODO: Add description**
+Email and SMS delivery service.
 
 # Phoenix App
 
@@ -21,6 +21,21 @@ Ready to run in production? Please [check our deployment guides](http://www.phoe
   * Docs: https://hexdocs.pm/phoenix
   * Mailing list: http://groups.google.com/group/phoenix-talk
   * Source: https://github.com/phoenixframework/phoenix
+
+## Heroku Support
+
+### One-click deployment
+
+  1. Review [README.md](README.md) and maybe fix repo path in install button;
+  2. Click on it and use Heroku deployment wizard [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Nebo15/postboy_api).
+
+### Application Reviews
+
+Now It's easy to create a deployment for each PR in your repo:
+
+  1. Review [app.json](app.json) and maybe fix repo paths;
+  2. Deploy app to Heroku;
+  3. Enable pipeline in Heroku application settings and turn on app reviews.
 
 ## Configuration
 

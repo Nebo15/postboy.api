@@ -6,6 +6,8 @@ defmodule Postboy.ReleaseTasks do
 
       postboy_api/bin/postboy_api command Elixir.Postboy.ReleaseTasks migrate!
   """
+  alias Ecto.Migrator
+
   @start_apps [
     :logger,
     :logger_json,
@@ -49,13 +51,17 @@ defmodule Postboy.ReleaseTasks do
     :init.stop()
   end
 
-  def priv_dir(app), do: "#{:code.priv_dir(app)}"
+  def priv_dir(app),
+    do: :code.priv_dir(app)
 
   defp run_migrations_for(app) do
     IO.puts "Running migrations for #{app}"
-    Enum.each(@repos, &Ecto.Migrator.run(&1, migrations_path(app), :up, all: true))
+    Enum.each(@repos, &Migrator.run(&1, migrations_path(app), :up, all: true))
   end
 
-  defp migrations_path(app), do: Path.join([priv_dir(app), "repo", "migrations"])
-  defp seed_path(app), do: Path.join([priv_dir(app), "repo", "seeds.exs"])
+  defp migrations_path(app),
+    do: Path.join([priv_dir(app), "repo", "migrations"])
+
+  defp seed_path(app),
+    do: Path.join([priv_dir(app), "repo", "seeds.exs"])
 end

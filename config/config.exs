@@ -45,7 +45,7 @@ config :postboy_api,
 # Configures the endpoint
 config :postboy_api, Postboy.Web.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "CRUAlAyRHmwJSYOaXSTSeaWuJH5nNyHQJSDZlBlWCV55X0rGyOSuti4hLP3CDqkG",
+  secret_key_base: "c0OM25sl/IDrGMN7hUMA+uLTK7JydOWB2e1DS0d6qTx0NSZxhDnWPohD52FfQeSq",
   render_errors: [view: EView.Views.PhoenixError, accepts: ~w(json)]
 
 # Configures Elixir's Logger

@@ -3,7 +3,7 @@ use Mix.Releases.Config,
   default_environment: :default
 
 cookie = :sha256
-|> :crypto.hash(System.get_env("ERLANG_COOKIE") || "brXPQUZasg/TSw3tKsZtHV13tk9PWDqVt1RCTfyYP8REyPGS/LUOEPRx/qNd8KY+")
+|> :crypto.hash(System.get_env("ERLANG_COOKIE") || "WshVkSRz8G6aiBxmaI4ytwcgk6J0QFRPAMcUA5X2hLdRRAAxLUtPFei2h/cBpHVL")
 |> Base.encode64
 
 environment :default do

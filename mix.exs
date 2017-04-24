@@ -5,7 +5,7 @@ defmodule Postboy.Mixfile do
 
   def project do
     [app: :postboy_api,
-     description: "Add description to your package.",
+     description: "Delivery service for Email or SMS messages.",
      package: package(),
      version: @version,
      elixir: "~> 1.4",

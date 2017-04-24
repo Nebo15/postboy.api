@@ -7,7 +7,7 @@ Also sample `.env` can be used as payload for `docker run` cli.
 
 | VAR_NAME      | Default Value           | Description |
 | ------------- | ----------------------- | ----------- |
-| ERLANG_COOKIE | `brXPQUZasg`..          | Erlang [distribution cookie](http://erlang.org/doc/reference_manual/distributed.html). **Make sure that default value is changed in production.** |
+| ERLANG_COOKIE | `WshVkSRz8G6`.. | Erlang [distribution cookie](http://erlang.org/doc/reference_manual/distributed.html). **Make sure that default value is changed in production.** |
 | LOG_LEVEL     | `info` | Elixir Logger severity level. Possible values: `debug`, `info`, `warn`, `error`. |
 
 ## Database
@@ -42,4 +42,4 @@ If you want to run migrations when container starts, use a `DB_MIGRATE` variable
 | ------------- | ------------- | ----------- |
 | PORT          | `4000`        | HTTP host for web app to listen on. |
 | HOST          | `localhost`   | HTTP port for web app to listen on. |
-| SECRET_KEY    | `CRUAlAyRH`.. | Phoenix [`:secret_key_base`](https://hexdocs.pm/phoenix/Phoenix.Endpoint.html). **Make sure that default value is changed in production.** |
+| SECRET_KEY    | `c0OM25sl/IDrGM`.. | Phoenix [`:secret_key_base`](https://hexdocs.pm/phoenix/Phoenix.Endpoint.html). **Make sure that default value is changed in production.** |
