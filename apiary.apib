@@ -128,7 +128,7 @@ all unsets will drop existing values in updated Service Account.
     + id: 58e2278a84092e61700041a7 (string)
 
 + Request (application/json)
-+ Response 200 (application/json)
++ Response 204 (application/json)
 
 ## Delivery Channels [/channels]
 
@@ -205,7 +205,7 @@ all unsets will drop existing values in updated Service Account.
     + id: 58e2278a84092e61700041a7 (string)
 
 + Request (application/json)
-+ Response 200 (application/json)
++ Response 204 (application/json)
 
 ### Send Message trough Channel [POST /channels/{id}/messages]
 
@@ -427,9 +427,9 @@ and provide a way to add a custom policy controller on top of [Messages]().
 ## Messages
 ### Message
 + Include `Message_Data`
-+ channel (`Channel_Data`, required)
-    + service_account (object)
-        + settings (`Service_Account__Settings`, required)
++ Include `Channel_Data`
++ service_account (object)
+    + settings (`Service_Account__Settings`, required)
 
 ### `Message_Data`
 + `external_id`: 123 (string, optional) - External ID may be used when saving notification ID for later pooling is not desired. MUST be unique.
